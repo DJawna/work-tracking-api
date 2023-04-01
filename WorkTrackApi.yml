@@ -1,0 +1,505 @@
+openapi:  3.0.2
+info: 
+  title: Work tracking API
+  version: '1.0'
+  description: an api
+  license: 
+    url: https://example.com
+    name: mit
+    
+servers: 
+  - url: https://localhost 
+tags: 
+  - name: Project Management
+    description: project management stuff
+  - name: Work Item Entry
+    description: methods related to manage the work item entries
+
+paths:
+  '/projects':
+    get:
+      summary: retrieves all projects
+      operationId: getAllProjects
+      tags: 
+        -  Project Management
+      security: 
+        - 'PrivateAccess' : []
+      parameters:
+      - name: searchByName
+        in: query
+        description: substring contained in the name of the project
+        schema:
+          $ref: "#/components/schemas/ProjectNameType"
+      - name: searchByDescription
+        in: query
+        description: substring contained in the description of the project
+        schema:
+          $ref: "#/components/schemas/ProjectDescriptionType"
+      responses: 
+        '200':
+          description: a list of projects.
+          content:
+            'application/json':
+              schema: 
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+        '401':
+          description: when not authorized.
+    post:
+      summary: creates a new project
+      operationId: createNewProject
+      tags:
+        - "Project Management"
+      security: 
+        - 'PrivateAccess' : []
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/NewProject"
+      responses:
+        '201':
+          description: When a new object could be created.
+          content:
+            'application/json':
+              schema:
+                type: string
+                format: uuid
+    put:
+      summary: updates a project
+      operationId: updateExistingProject
+      tags:
+        - "Project Management"
+      security: 
+        - 'PrivateAccess' : []
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/Project"
+      responses:
+        '204':
+          description: When an existing project could be updated.
+    delete:
+      summary: deletes a project
+      operationId: deleteExistingProject
+      tags:
+        - "Project Management"
+      security: 
+        - 'PrivateAccess' : []
+      parameters:
+        - name: Id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: When an existing project could be deleted.
+  '/customers':
+    get: 
+      summary: get customers
+      operationId: getCustomers
+      tags: 
+        -  Project Management
+      security: 
+        -  'PrivateAccess' : []
+      parameters: 
+        - name: id
+          in: query
+          description: 'the id of the customer'
+          required: false
+          schema: 
+            type: array
+            items: 
+              type: string
+        - name: searchByName
+          in: query
+          description: customer name contains
+          required: false
+          schema:
+            $ref: "#/components/schemas/CustomerNameType"
+      responses:
+        '200':
+          description: a list of customers
+          content:
+            'application/json':
+              schema: 
+                type: array
+                items:
+                  $ref: "#/components/schemas/Customer"
+    post:
+      summary: post new customer
+      operationId: postCustomer
+      tags:
+        - Project Management
+      security:
+        - 'PrivateAccess' : []
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/NewCustomer"
+      responses:
+        '201':
+          description: the uuid of the new customer
+          content:
+            'application/json':
+              schema:
+                type: string
+                format: uuid
+    put:
+      summary: put existing 
+      operationId: putCustomer
+      tags:
+        - Project Management
+      security:
+        - 'PrivateAccess' : []
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/Customer"
+      responses:
+        '204':
+          description: when change was successfull
+    delete:
+      summary: delete existing
+      operationId: deleteCustomer
+      tags:
+        - Project Management
+      security:
+        - 'PrivateAccess' : []
+      parameters:
+        - name: Id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: when deletion was successfull
+  '/projectphasetype':
+    get:
+      summary: get project phase types
+      operationId: getProjectPhaseType
+      tags: 
+        -  Project Management
+      security: 
+        -  'PrivateAccess' : []
+      parameters:
+        - name: ProjectId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: NameSearch
+          in: query
+          schema:
+            type: string
+            maxLength: 32
+      responses:
+        '200':
+          description: when matching projectphasetypes could be found
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProjectPhaseType"
+    post:
+      summary: create new project phase type
+      operationId: postProjectPhaseType
+      tags:
+        - Project Management
+      security: 
+        -  'PrivateAccess' : []
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/NewProjectPhaseType"
+      responses:
+        '201':
+          description: When project phase type coult be created.
+          content:
+            'application/json':
+              schema:
+                type: string
+                format: uuid
+    put:
+      summary: modify existing project phase type
+      operationId: putProjectPhasetype
+      tags:
+        - Project Management
+      security: 
+        -  'PrivateAccess' : []
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/ProjectPhaseType"
+      responses:
+        '204':
+          description: When project phase type could be modified.
+        '400':
+          description: When project does not exist or the body is invalid.
+    delete:
+      summary: delete existing project phase type
+      operationId: deleteProjectPhasetype
+      tags:
+        - Project Management
+      security: 
+        -  'PrivateAccess' : []
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: When project phase type could be deleted.
+        '400':
+          description: >-
+            When project phase type could not be deleted,
+            due to one of the following reasons:
+            - the id was not found
+            - the entity is required by dependent objects and can thus
+            not be deleted.
+  '/WorkItem':
+    get:
+      summary: get work item 
+      tags:
+        - Work Item Entry
+      operationId: getWorkItem
+      security: 
+        -  'PrivateAccess' : []
+      parameters:
+        - name: descriptionContains
+          in: query
+          schema:
+            $ref: "#/components/schemas/WorkItemDescriptionType"
+        - name: projectId
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+        - name: phaseId
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+      responses:
+        '200':
+          description: a list of matching workItem entries
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WorkItem"
+    post:
+      summary: post work item 
+      tags:
+        - Work Item Entry
+      operationId: postWorkItem
+      security: 
+        -  'PrivateAccess' : []
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/NewWorkItem"
+      responses:
+        '201':
+          description: when work item could be created
+          content:
+            'application/json':
+              schema:
+                type: string
+                format: uuid
+    put:
+      summary: put work item 
+      tags:
+        - Work Item Entry
+      operationId: putWorkItem
+      security: 
+        -  'PrivateAccess' : []
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/WorkItem"
+      responses:
+        '204':
+          description: when work item could be modified.
+    delete:
+      summary: delete work item 
+      tags:
+        - Work Item Entry
+      operationId: deleteWorkItem
+      security: 
+        -  'PrivateAccess' : []
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: when work item could be deleted.
+components:
+  schemas:
+    ProjectNameType:
+      type: string
+      maxLength: 32
+      minLength: 3
+    ProjectDescriptionType:
+      type: string
+      maxLength: 512
+    CustomerNameType:
+      type: string
+      maxLength: 32
+    ProjectPhaseNameType:
+      type: string
+      maxLength: 32
+    WorkItemDescriptionType:
+      type: string
+      maxLength: 512
+      minLength: 64
+    NewProject:
+      type: object
+      properties:
+        Name:
+          $ref: "#/components/schemas/ProjectNameType"
+        CustomerId:
+          type: string
+          format: uuid
+        ProjectDescription:
+          $ref: "#/components/schemas/ProjectDescriptionType"
+        LastModified:
+          type: string
+          format: date
+          readOnly: true
+        Created:
+          type: string
+          format: date
+          readOnly: true
+    Project:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/NewProject"
+      properties:
+        Id:
+          type: string
+          format: uuid
+    NewCustomer:
+      type: object
+      properties:
+        Name:
+          $ref: "#/components/schemas/CustomerNameType"
+        LastModified:
+          type: string
+          format: date
+          readOnly: true
+        Created:
+          type: string
+          format: date
+          readOnly: true
+    Customer:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/NewCustomer'
+      properties:
+        Id:
+          type: string
+          format: uuid
+    NewProjectPhaseType:
+      type: object
+      properties:
+        Name:
+          $ref: "#/components/schemas/ProjectPhaseNameType"
+        ProjectId:
+          type: string
+          format: uuid
+        ParentProjectPhaseTypeId:
+          type: string
+          format: uuid
+          description: is null when no parent exist
+          nullable: true
+    ProjectPhaseType:
+      type: object
+      description: represents a template for an project phase which can be assigned to a workitem
+      allOf:
+        - $ref: '#/components/schemas/NewProjectPhaseType'
+      properties:
+        Id:
+          type: string
+          format: uuid
+        LastModified:
+          type: string
+          format: date
+          readOnly: true
+        Created:
+          type: string
+          format: date
+          readOnly: true
+    NewWorkItem:
+      type: object
+      description: represents a unit of work that has been done.
+      properties:
+        WorkDescription:
+          $ref: "#/components/schemas/WorkItemDescriptionType"
+        WorkStart:
+          type: string
+          format: date
+        WorkEnd:
+          type: string
+          format: date
+        ProjectId:
+          type: string
+          format: uuid
+          description: references the project
+        ProjectPhaseId:
+          $ref: "#/components/schemas/PhaseValueEntry"
+    WorkItem:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/NewWorkItem'
+      properties:
+        created:
+          type: string
+          format: date
+          readOnly: true
+        lastEdited:
+          type: string
+          format: date
+          readOnly: true
+    PhaseValueEntry:
+      description: the
+      type: object
+      properties:
+        projectPhaseId:
+          type: string
+          format: uuid
+          description: phase id of the phasevalue entry.
+        subEntry:
+          description: sub phase if applicable
+          nullable: true
+          $ref: "#/components/schemas/PhaseValueEntry"
+  securitySchemes:
+    'PrivateAccess':
+      type: openIdConnect
+      description: the restricted access
+      openIdConnectUrl: https://localhost/openidConnect
